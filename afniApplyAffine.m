@@ -13,7 +13,7 @@ function afniApplyAffine(subject,ROI,histoVol,path,val)
 % path = path to directory where the subject's anatomies are kept
 % val = the nonzero value in the binary ROI output. 
 % example
-% vol2volWarp('pm1494','rh_MPM_mFus.nii.gz','pm1494histo_invNlin_corr_small_histcorr_pad.nii.gz','~/projects/CytoArchitecture/segmentations/histoRecons/pm1494',1);
+% vol2volWarp('pm1','rh_MPM_mFus.nii.gz','pm1_historecon.nii.gz','~/projects/CytoArchitecture/segmentations/histoRecons/pm1',1);
 % MAB 2016  
 
 system('source /etc/afni/afni.sh')
