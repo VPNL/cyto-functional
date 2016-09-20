@@ -13,7 +13,7 @@ function afniCreateAffine(subject,mriVol,histoVol,path)
 %  path = path to directory where the subject's anatomy files live
 %
 %  example
-%  vol2volWarp('pm1494','pm1494histo_invNlin_corr_small_histcorr_pad_lin2colin27.nii.gz','pm1494histo_invNlin_corr_small_histcorr_pad.nii.gz','~/projects/CytoArchitecture/segmentations/histoRecons/pm1494');
+%  vol2volWarp('pm1','pm1_anatomy.nii.gz','pm1_histcorecon.nii.gz','~/projects/CytoArchitecture/segmentations/histoRecons/pm1');
 % 
 %  MB March 2016
 
