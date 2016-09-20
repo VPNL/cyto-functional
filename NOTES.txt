@@ -1,0 +1,40 @@
+Notes on how to register ROIs from the MRI of post-mortem to their 3D histological reconstuctions
+
+
+
+AFNI Steps
+Step 0
+source /etc/afni/afni.sh
+
+Step 1.
+
+The purpose of this step is to roughly align the two brains volumes using an affine tranform.
+
+Use 3dAllineate to do a linear (12DoF) registration from the mri volume anatomy of a subject to the 3D histological reconstuction of the same subject. 
+This step creates fewer distortions for the Qwarp. 
+This registration creates an output transform file called .param.1D used to roughly aline the brain volumes. It also creates the transformed volume which we are calling for now
+afni_result.nii.gz
+
+code: 
+3dAllineate -prefix afni_result.nii.gz -base pm14686histo_invNlin_corr_small_histcorr_pad.nii.gz -input pm14686histo_invNlin_corr_small_histcorr_pad_lin2colin27.nii.gz -cmass -twopass -1Dparam_save afni_param
+
+Step 2.
+Applying the .param.1D registration file to the ROI to register it to the same volume.
+
+3dAllineate -prefix niftiROIs/rh_MPM_PPA_afni.nii.gz -base pm14686histo_invNlin_corr_small_histcorr_pad.nii.gz -input niftiROIs/rh.MPM_PPA_regFrom_fsaverage-bkup.nii.gz -1Dparam_apply afni_param.param.1D
+
+Step 3.
+The purpose of this step is to use a nonlinear tranformation to align the cortical folding across the two brains. We need this step because the histological 3D reconstructed volume is distorted relative to the 3D MRI volume. 
+
+Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction using the afni function 3dQwarp. 
+
+This alignment generates an output volume which we called afni_result_qwarp.nii.gz  and a registration file called afni_result_qwarp_WARP.nii.gz.
+
+3dQwarp -prefix afni_result_qwarp.nii.gz  -source afni_result.nii.gz -base pm14686histo_invNlin_corr_small_histcorr_pad.nii.gz 
+
+Step 4. 
+Apply the non-linear transform calculated in step 3 to the ROIs.
+3dNwarpApply -nwarp afni_result_qwarp_WARP.nii.gz -source niftiROIs/rh_MPM_pFus_afni.nii.gz -prefix rh_MPM_pFus_anfi_3dQwarp.nii.gz
+
+References:  https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAllineate.html
+https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dWarp.html
