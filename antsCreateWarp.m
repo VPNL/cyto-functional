@@ -7,7 +7,7 @@ function antsCreateWarp(subject,mriVol,histoVol,path,calcReg)
 %
 % This is run on a per subject basis -- 
 % after running this function we will use the transform to register all the
-% ROIs to the histolical reconstruction
+% ROIs to the histological reconstruction
 %
 % Input:
 % subject = name of the subject directory in the histoRecons
@@ -20,7 +20,7 @@ function antsCreateWarp(subject,mriVol,histoVol,path,calcReg)
 % example
 % antsCreateWarp('pm1','pm1_anat_3dAllin.nii.gz','pm1_histrecon.nii.gz','~/projects/CytoArchitecture/pm1',0);
 % 
-% MB March 2016
+% MAB March 2016
 
 
 %runs the ANTs script for volume transformation file generation
