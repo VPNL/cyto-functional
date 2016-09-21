@@ -3,7 +3,7 @@ function afniCreateAffine(subject,mriVol,histoVol,path)
 %
 %  This code creates an affine tranform to roughly align the mri volume anatomy of a PM subject to the 3D histological reconstuction 
 %  generates a new volume: fullfile(path, [subject '_3dAllin_Qwarp.nii.gz']);
-%  and a transformation file: fullfile(path, [subject '.param.1D']); This
+%  and a transformation file: fullfile(path, [subject '.param.1D']); The .param.1D file
 %  will be needed for the function afniApplyAffine.m
 %
 %  Input:
@@ -15,7 +15,7 @@ function afniCreateAffine(subject,mriVol,histoVol,path)
 %  example
 %  vol2volWarp('pm1','pm1_anatomy.nii.gz','pm1_histcorecon.nii.gz','~/projects/CytoArchitecture/segmentations/histoRecons/pm1');
 % 
-%  MB March 2016
+%  MAB March 2016
 
 system('source /etc/afni/afni.sh')
 
@@ -28,9 +28,3 @@ oneDparam_out = fullfile(path, subject);
 cmd = ['3dAllineate -prefix ' Allineate_out ' -base ' refFile ' -input ' inFile ' -cmass -twopass -1Dparam_save ' oneDparam_out];
 display(cmd)
 system(cmd)
-% %% if you want to try it with running 3dQwarp from afni
-% %% run 3dQwarp from afni - nolinear alignment
-% Qwarp_out = fullfile(path, [subject '_3dAllin_Qwarp.nii.gz']);
-% cmd = ['3dQwarp -workhard -minpatch 5 -prefix ' Qwarp_out '  -source  ' Allineate_out ' -base ' refFile];
-% display(cmd)
-% system(cmd)	
