@@ -1,4 +1,4 @@
-Notes on how to register ROIs from the MRI of post-mortem to their 3D histological reconstuctions
+Notes on how to register ROIs from the surface mesh MRI of post-mortem to their 3D histological reconstuctions
 
 To start, you must have the MPM fROIs registered to each postmortem subjects' cortical surface.
 To do this you run 2 steps:
@@ -7,7 +7,8 @@ To do this you run 2 steps:
   2. Create a nifti volume from the registered MPM label
     mri_label2vol --label <MPM fROI label> --temp <orig.mgz> --identity --proj frac <0 1 .1> --subject <PM subject> --o <MPM_fROI.nii.gz>
 
-STEP: 1 Next is the rough alignment from the MRI anatomical image to the histological reconstuction of the same pm subject.
+STEP 1: afniCreateAffine.m 
+Next is the rough alignment from the MRI anatomical image to the histological reconstuction of the same pm subject.
 Use the function afniCreateAffine.m to generate the tranformation matrix that will be applies to the fROIs.
   code basics:
   sets up afni
@@ -20,12 +21,19 @@ Use the function afniCreateAffine.m to generate the tranformation matrix that wi
   core function:
     3dAllineate -prefix afni_result.nii.gz -base pm1_historecon.nii.gz -input pm1_mri_anat.nii.gz -cmass -twopass -1Dparam_save afni_param
 
-  Step 2.
-  Applying the .param.1D registration file to the ROI to register it to the same volume.
+Step 2: afniCreateAffine.m
+This applies the .param.1D registration file to the a ROI to register it to the histological reconstruction.
 
-3dAllineate -prefix niftiROIs/rh_MPM_PPA_afni.nii.gz -base pm14686histo_invNlin_corr_small_histcorr_pad.nii.gz -input niftiROIs/rh.MPM_PPA_regFrom_fsaverage-bkup.nii.gz -1Dparam_apply afni_param.param.1D
+  code basics: 
+  sets up afni
+  source /etc/afni/afni.sh
+  
+  Use 3dAllineate with the -1Dparam_apply flag to skip calculating the transformation and apply what we save out in the last step.
+  
+  core function:
+    3dAllineate -prefix rh_MPM_PPA_3dAllineate.nii.gz -base pm1_historecon.nii.gz -input rh.MPM_PPA_pm1.nii.gz -1Dparam_apply afni_param.param.1D
 
-Step 3.
+Step 3: antsCreateWarp
 The purpose of this step is to use a nonlinear tranformation to align the cortical folding across the two brains. We need this step because the histological 3D reconstructed volume is distorted relative to the 3D MRI volume. 
 
 Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction using the afni function 3dQwarp. 
