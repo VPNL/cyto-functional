@@ -10,6 +10,9 @@ To do this you run 2 steps:
 STEP 1: afniCreateAffine.m 
 Next is the rough alignment from the MRI anatomical image to the histological reconstuction of the same pm subject.
 Use the function afniCreateAffine.m to generate the tranformation matrix that will be applies to the fROIs.
+
+Check https://afni.nimh.nih.gov/afni for how to install
+
   code basics:
   sets up afni
   source /etc/afni/afni.sh
@@ -25,26 +28,32 @@ Step 2: afniCreateAffine.m
 This applies the .param.1D registration file to the a ROI to register it to the histological reconstruction.
 
   code basics: 
-  sets up afni
-  source /etc/afni/afni.sh
-  
+
   Use 3dAllineate with the -1Dparam_apply flag to skip calculating the transformation and apply what we save out in the last step.
   
   core function:
     3dAllineate -prefix rh_MPM_PPA_3dAllineate.nii.gz -base pm1_historecon.nii.gz -input rh.MPM_PPA_pm1.nii.gz -1Dparam_apply afni_param.param.1D
 
-Step 3: antsCreateWarp
-The purpose of this step is to use a nonlinear tranformation to align the cortical folding across the two brains. We need this step because the histological 3D reconstructed volume is distorted relative to the 3D MRI volume. 
+Step 3: antsCreateWarp.m
+The purpose of this step is to use a nonlinear tranformation to align the cortical folding across the two brains. We need this step because the histological 3D reconstructed volume is distorted relative to the 3D MRI volume due to slice sampling and slice orrientation. 
 
-Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction using the afni function 3dQwarp. 
+Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction is done with ANTs 
 
-This alignment generates an output volume which we called afni_result_qwarp.nii.gz  and a registration file called afni_result_qwarp_WARP.nii.gz.
+Check http://stnava.github.io/ANTs/ for how to install
+  
+  code basics: 
+  antsRegistrationSyNQuick.sh -a shell script that comes with ANTs that calculates the warp between the source and target volume.
+  antsApplyTransforms -applies the transform
 
-3dQwarp -prefix afni_result_qwarp.nii.gz  -source afni_result.nii.gz -base pm14686histo_invNlin_corr_small_histcorr_pad.nii.gz 
-
-Step 4. 
+Step 4: antsApplyWarp.m  
 Apply the non-linear transform calculated in step 3 to the ROIs.
-3dNwarpApply -nwarp afni_result_qwarp_WARP.nii.gz -source niftiROIs/rh_MPM_pFus_afni.nii.gz -prefix rh_MPM_pFus_anfi_3dQwarp.nii.gz
 
-References:  https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAllineate.html
+  code basics:
+  antsApplyTransforms - Applies the warp file calculated in step 3 to an ROI
+  binarizes the output of antsApplyTransforms to create an ROI that is a specfied value for the ROI and 0 everywhere else.
+  
+  
+References:  
+https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAllineate.html
 https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dWarp.html
+http://stnava.github.io/ANTs/
