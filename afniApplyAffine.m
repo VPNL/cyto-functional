@@ -29,16 +29,6 @@ cmd = ['3dAllineate -prefix ' roi_out ' -base ' histo_vol '  -input ' roi_in ' -
 display(cmd)
 system(cmd)
 
-
-%% if you would want to try it with running 3dQwarp from afni
-% xfrm_Qwarp = fullfile(path, [subject '_3dAllin_Qwarp_WARP.nii.gz']);
-% 
-% roi_Qwarp = fullfile(path, 'mpmROIs',[ROI '_' subject '_Qwarp.nii.gz']);
-% cmd = ['3dNwarpApply -nwarp ' xfrm_Qwarp ' -source ' roi_out ' -prefix ' roi_Qwarp];
-% 
-% display(cmd)
-% system(cmd)	
-% 
 %% change ROI color
 nii = readFileNifti(roi_out);
 
