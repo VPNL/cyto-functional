@@ -1,4 +1,4 @@
-Notes on how to register ROIs from the surface mesh MRI of post-mortem to their 3D histological reconstuctions
+Notes on how to register ROIs from the surface mesh MRI of post-mortem (PM) brains to their 3D histological reconstuctions
 
 To start, you must have the MPM fROIs registered to each postmortem subjects' cortical surface.
 To do this you run 2 steps:
@@ -8,38 +8,38 @@ To do this you run 2 steps:
     mri_label2vol --label <MPM fROI label> --temp <orig.mgz> --identity --proj frac <0 1 .1> --subject <PM subject> --o <MPM_fROI.nii.gz>
 
 STEP 1: afniCreateAffine.m 
-Next is the rough alignment from the MRI anatomical image to the histological reconstuction of the same pm subject.
-Use the function afniCreateAffine.m to generate the tranformation matrix that will be applies to the fROIs.
+Next is the rough alignment from the MRI anatomical volume to the histological reconstuction of the same PM subject.
+Use the function afniCreateAffine.m to generate the tranformation matrix that will be subsequently applied to fROIs.
 
-Check https://afni.nimh.nih.gov/afni for how to install
+Read https://afni.nimh.nih.gov/afni for how to install
 
   code basics:
   sets up afni
   source /etc/afni/afni.sh
   
-  Use 3dAllineate to do a linear (12DoF) registration from the mri volume anatomy of a PM subject to the 3D histological reconstuction of the same subject. 
-  This step creates fewer distortions in the final registration than if you were to run ANTs on a untranformed volume. 
+  Use 3dAllineate to do a linear (12DoF) registration from the MRI volume anatomy of a PM subject to the 3D histological reconstuction of the same subject. 
+  This step creates fewer distortions in the final registration than if you ran ANTs directly aligning the original MRI volume to the 3D histological reconstruction.  
   This registration creates an output transform file called .param.1D That will be applied to the fROIS in the function anfiApplyAffine.m
 
   core function:
     3dAllineate -prefix afni_result.nii.gz -base pm1_historecon.nii.gz -input pm1_mri_anat.nii.gz -cmass -twopass -1Dparam_save afni_param
 
 Step 2: afniCreateAffine.m
-This applies the .param.1D registration file to the a ROI to register it to the histological reconstruction.
+This applies the .param.1D registration file to a ROI to register it to the histological reconstruction.
 
   code basics: 
 
-  Use 3dAllineate with the -1Dparam_apply flag to skip calculating the transformation and apply what we save out in the last step.
+  Use 3dAllineate with the -1Dparam_apply flag to skip calculating the transformation and apply the transformation we saved out in the prior step.
   
   core function:
     3dAllineate -prefix rh_MPM_PPA_3dAllineate.nii.gz -base pm1_historecon.nii.gz -input rh.MPM_PPA_pm1.nii.gz -1Dparam_apply afni_param.param.1D
 
 Step 3: antsCreateWarp.m
-The purpose of this step is to use a nonlinear tranformation to align the cortical folding across the two brains. We need this step because the histological 3D reconstructed volume is distorted relative to the 3D MRI volume due to slice sampling and slice orrientation. 
+The purpose of this step is to use a nonlinear tranformation to align the precise cortical folding of the aligned MRI PM volume to the cortical foldong of its 3D histological reconstruction. This step is necessary because the orientation of the slices in the 3D histological reconstructed brain are different from orientation of the slices in the 3D MRI volume, and the physical slicing of the brain and placement of histological sections on slides can cause additional distortions. 
 
 Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction is done with ANTs 
 
-Check http://stnava.github.io/ANTs/ for how to install
+Read http://stnava.github.io/ANTs/ for how to install
   
   code basics: 
   antsRegistrationSyNQuick.sh -a shell script that comes with ANTs that calculates the warp between the source and target volume.
@@ -50,7 +50,7 @@ Apply the non-linear transform calculated in step 3 to the ROIs.
 
   code basics:
   antsApplyTransforms - Applies the warp file calculated in step 3 to an ROI
-  binarizes the output of antsApplyTransforms to create an ROI that is a specfied value for the ROI and 0 everywhere else.
+  binarizes the output of antsApplyTransforms to create an ROI that contains a specified value indicating the ROI and 0 elsewhere
   
   
 References:  
