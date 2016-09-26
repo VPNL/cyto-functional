@@ -37,6 +37,10 @@ This applies the .param.1D registration file to a ROI to register it to the hist
 Step 3: antsCreateWarp.m
 The purpose of this step is to use a nonlinear tranformation to align the precise cortical folding of the aligned MRI PM volume to the cortical foldong of its 3D histological reconstruction. This step is necessary because the orientation of the slices in the 3D histological reconstructed brain are different from orientation of the slices in the 3D MRI volume, and the physical slicing of the brain and placement of histological sections on slides can cause additional distortions. 
 
+ This function generates: 
+  new volume fullfile(path, [subject '_3dAllin_Qwarp.nii.gz']);
+  and a transformation: fullfile(path, [subject '_3dAllin_Qwarp_WARP.nii.gz']);
+ 
 Running the non-linear alignment between the output of 3dAllineate and the 3D histological volume reconstruction is done with ANTs 
 
 Read http://stnava.github.io/ANTs/ for how to install
@@ -44,8 +48,6 @@ Read http://stnava.github.io/ANTs/ for how to install
   code basics: 
   antsRegistrationSyNQuick.sh -a shell script that comes with ANTs that calculates the warp between the source and target volume.
   antsApplyTransforms -applies the transform
-  generates: new volume fullfile(path, [subject '_3dAllin_Qwarp.nii.gz']);
-  and a transformation: fullfile(path, [subject '_3dAllin_Qwarp_WARP.nii.gz']);
  
 Step 4: antsApplyWarp.m  
 Apply the non-linear transform calculated in step 3 to the ROIs.
