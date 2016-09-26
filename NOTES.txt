@@ -44,7 +44,9 @@ Read http://stnava.github.io/ANTs/ for how to install
   code basics: 
   antsRegistrationSyNQuick.sh -a shell script that comes with ANTs that calculates the warp between the source and target volume.
   antsApplyTransforms -applies the transform
-
+  generates: new volume fullfile(path, [subject '_3dAllin_Qwarp.nii.gz']);
+  and a transformation: fullfile(path, [subject '_3dAllin_Qwarp_WARP.nii.gz']);
+ 
 Step 4: antsApplyWarp.m  
 Apply the non-linear transform calculated in step 3 to the ROIs.
 
